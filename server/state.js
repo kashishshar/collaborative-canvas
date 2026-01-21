@@ -1,7 +1,3 @@
-/**
- * server/state.js
- */
-
 // We never remove items from here, only mark them as hidden.
 const history = []; 
 
