@@ -69,14 +69,18 @@ io.on('connection', (socket) => {
   socket.on('end_stroke', () => {
     const stroke = state.activeStrokes.get(socket.id);
     if (stroke) {
-      stroke.isHidden = false; // Default visibility
+      stroke.isHidden = false;
       state.history.push(stroke);
       state.activeStrokes.delete(socket.id);
       
-      // CRITICAL: If you draw something new, you break your Redo chain.
-      // We clear ONLY this user's redo stack.
+      // CRITICAL: Clear redo stack because a new action was taken
       state.userRedoStacks.set(socket.id, []);
       
+      // 1. Tell everyone to remove this specific stroke from "Active/Pending"
+      // This fixes the "Ghost Line" bug on Tab 1
+      io.emit('remote_end', socket.id); 
+
+      // 2. Send the new history to permanent storage
       io.emit('history_update', state.history);
     }
   });
@@ -92,49 +96,47 @@ io.on('connection', (socket) => {
     }
   });
 
-  // 4. Global Undo/Redo Logic
+  // 4. Per-User Undo/Redo Logic
   socket.on('undo', () => {
-    const myRedoStack = state.userRedoStacks.get(socket.id);
-    
-    // 1. Find the most recent stroke by THIS user that is NOT hidden
-    // We iterate backwards through history
-    let strokeToUndo = null;
+    // 1. Find the MOST RECENT stroke by THIS user
+    let matchIndex = -1;
     for (let i = state.history.length - 1; i >= 0; i--) {
-      const stroke = state.history[i];
-      if (stroke.userId === socket.id && !stroke.isHidden) {
-        strokeToUndo = stroke;
+      if (state.history[i].userId === socket.id) {
+        matchIndex = i;
         break;
       }
     }
 
-    if (strokeToUndo) {
-      // 2. Mark it as hidden (Soft Delete)
-      strokeToUndo.isHidden = true;
+    if (matchIndex !== -1) {
+      // 2. Remove it from history (Splice is safe here)
+      const removedStroke = state.history.splice(matchIndex, 1)[0];
       
-      // 3. Add to user's redo stack so they can bring it back
-      myRedoStack.push(strokeToUndo.id);
-      
-      // 4. Broadcast the change to EVERYONE (Syncs Tab 1 and Tab 2)
+      // 3. Add to user's private redo stack
+      if (!state.userRedoStacks.has(socket.id)) {
+        state.userRedoStacks.set(socket.id, []);
+      }
+      state.userRedoStacks.get(socket.id).push(removedStroke);
+
+      // 4. Broadcast global update
       io.emit('history_update', state.history);
     }
   });
 
-  // --- PER-USER REDO ---
   socket.on('redo', () => {
-    const myRedoStack = state.userRedoStacks.get(socket.id);
-    
-    if (myRedoStack && myRedoStack.length > 0) {
-      // 1. Get the last stroke ID this user undid
-      const strokeIdToRecover = myRedoStack.pop();
+    const userStack = state.userRedoStacks.get(socket.id);
+
+    if (userStack && userStack.length > 0) {
+      // 1. Get the last undone stroke
+      const strokeRestored = userStack.pop();
       
-      // 2. Find it in the global history
-      const stroke = state.history.find(s => s.id === strokeIdToRecover);
-      
-      if (stroke) {
-        // 3. Make it visible again
-        stroke.isHidden = false;
-        io.emit('history_update', state.history);
-      }
+      // 2. Push it back to history. 
+      // NOTE: In a shared whiteboard, "Redo" usually puts the line 
+      // on top (newest layer) rather than inserting it back in the middle.
+      // This prevents complex z-index issues.
+      state.history.push(strokeRestored);
+
+      // 3. Broadcast global update
+      io.emit('history_update', state.history);
     }
   });
 
