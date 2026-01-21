@@ -1,7 +1,5 @@
-/**
- * socket.js
- * Handles all network communication.
- */
+// Handles all network communication.
+ 
 export class SocketClient {
   constructor(canvasManager, uiCallback) {
     this.socket = io();
@@ -32,6 +30,10 @@ export class SocketClient {
 
     this.socket.on('remote_point', ({ id, x, y }) => {
       this.canvas.updateRemoteStroke(id, x, y);
+    });
+
+    this.socket.on('remote_end', (id) => {
+      this.canvas.endRemoteStroke(id);
     });
 
     // Remote cursors
