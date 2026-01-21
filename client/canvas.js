@@ -1,7 +1,5 @@
-/**
- * canvas.js
- * Encapsulates all drawing logic.
- */
+//Encapsulates all drawing logic.
+
 export class CanvasManager {
   constructor(canvasElement) {
     this.canvas = canvasElement;
@@ -109,7 +107,7 @@ export class CanvasManager {
 
   setHistory(newHistory) {
     this.history = newHistory;
-    requestAnimationFrame(() => this.render());
+    this.render();
   }
 
   updateRemoteCursor(id, x, y, color) {
@@ -133,6 +131,6 @@ export class CanvasManager {
     // When a remote user finishes, we don't add to history here.
     // We wait for the server 'history_update' event to ensure synchronization.
     this.activeStrokes.delete(id);
-    requestAnimationFrame(() => this.render());
+    this.render();
   }
 }
