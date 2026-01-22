@@ -2,6 +2,9 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)
 ![Socket.io](https://img.shields.io/badge/Socket.io-4.x-black.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![CI](https://github.com/kashishshar/collaborative-canvas/actions/workflows/node-ci.yml/badge.svg)
+
 
 
 A real-time, multi-user whiteboard application built with **Node.js**, **Socket.io**, and the native **HTML5 Canvas API**. 
@@ -73,3 +76,6 @@ This application follows a **Server-Authoritative** model for history state, but
 ## Deployment
 
 This project is set up for easy deployment on **Render**.
+
+## 📄 License 
+This project is licensed under the MIT License - see the LICENSE file for details.
