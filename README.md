@@ -2,18 +2,18 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)
 ![Socket.io](https://img.shields.io/badge/Socket.io-4.x-black.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 
 A real-time, multi-user whiteboard application built with **Node.js**, **Socket.io**, and the native **HTML5 Canvas API**. 
 
 It features synchronized drawing, live user cursors, and a complex **per-user undo/redo** system that maintains global state consistency.
 
-### 🔴 [Live Demo](https://collaborative-canvas-kashishshar.onrender.com)
+###  [Live Demo](https://collaborative-canvas-kashishshar.onrender.com)
 
 
 ---
 
-## ✨ Features
+## Features
 
 * **Real-time Collaboration:** See strokes from other users instantly as they draw.
 * **Global Synchronization:** Every user sees the exact same board state.
@@ -22,7 +22,7 @@ It features synchronized drawing, live user cursors, and a complex **per-user un
 * **Dynamic Tools:** Change brush color, size, or switch to eraser.
 * **Smooth Rendering:** Uses Quadratic Curve interpolation for smooth, organic lines (not jagged polygon lines).
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Backend:** Node.js, Express
 * **Real-time Engine:** Socket.io (WebSockets)
@@ -30,7 +30,7 @@ It features synchronized drawing, live user cursors, and a complex **per-user un
 * **Graphics:** HTML5 Canvas API (2D Context)
 * **Deployment:** Compatible with Render, Heroku, or Railway.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 * Node.js (v14 or higher)
@@ -57,7 +57,7 @@ It features synchronized drawing, live user cursors, and a complex **per-user un
 4.  **Open the application**
     Visit `http://localhost:3000` in your browser. Open it in a second tab (or an Incognito window) to test the collaborative features.
 
-## 📖 Architecture Overview
+## Architecture Overview
 
 This application follows a **Server-Authoritative** model for history state, but uses a **Client-Optimistic** approach for real-time drawing to ensure zero latency.
 
@@ -70,6 +70,6 @@ This application follows a **Server-Authoritative** model for history state, but
     * The server tracks which stroke belongs to which user.
     * When a user clicks "Undo", the server scans history *backwards* to find that specific user's last action, removes it, and triggers a global re-render.
 
-## ☁️ Deployment
+## Deployment
 
 This project is set up for easy deployment on **Render**.
